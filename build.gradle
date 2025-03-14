@@ -1,0 +1,75 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'cpp'
+}
+
+application {
+    mainClass = 'org.cambala.Main'
+}
+
+run {
+    systemProperty "java.library.path", file("/usr/local/lib").absolutePath + ":" + file("${buildDir}/libs/main/shared").absolutePath
+}
+
+model {
+    components {
+        main(NativeLibrarySpec) {
+            sources {
+                cpp {
+                    source {
+                        srcDir 'src/native/cpp'
+                        include '**/*.cpp'
+                    }
+                }
+            }
+
+            binaries.all { binary ->
+                def os = binary.targetPlatform.operatingSystem
+                def extension = os.isWindows() ? '.dll' : os.isMacOsX() ? '.dylib' : '.so'
+
+                // Настройки компилятора и линкера
+                cppCompiler.args "-I${System.getProperty('java.home')}/include"
+                if (os.isMacOsX()) {
+                    cppCompiler.args "-I${System.getProperty('java.home')}/include/darwin"
+                    cppCompiler.args '-I', '/usr/local/include'
+                    linker.args '-L', '/usr/local/lib', '-lvulkan', '-lMoltenVK'
+                } else if (os.isLinux()) {
+                    cppCompiler.args "-I${System.getProperty('java.home')}/include/linux"
+                    cppCompiler.args '-I', '/usr/include/vulkan'
+                    linker.args '-lvulkan'
+                } else if (os.isWindows()) {
+                    cppCompiler.args "-I${System.getProperty('java.home')}/include/win32"
+                    cppCompiler.args '-I', 'C:/VulkanSDK/x.x.x.x/Include'
+                    linker.args '-L', 'C:/VulkanSDK/x.x.x.x/Lib', '-lvulkan-1'
+                }
+                println "cppCompiler.args: ${cppCompiler.args}"
+
+                // Настройки для динамической библиотеки
+                if (binary instanceof SharedLibraryBinarySpec) {
+                    binary.sharedLibraryFile = file("${buildDir}/libs/main/shared/libvulkanjava${extension}")
+                }
+
+                // Настройки для статической библиотеки
+                if (binary instanceof StaticLibraryBinarySpec) {
+                    binary.staticLibraryFile = file("${buildDir}/libs/main/static/libvulkanjava.a")
+                }
+            }
+        }
+    }
+}
+
+task fixDylibPaths {
+    doLast {
+        println "Fixing library paths..."
+        exec {
+            commandLine 'install_name_tool', '-change', '@rpath/libvulkan.1.dylib', '/usr/local/lib/libvulkan.1.dylib', "${buildDir}/libs/main/shared/libvulkanjava.dylib"
+        }
+        exec {
+            commandLine 'install_name_tool', '-change', '@rpath/libMoltenVK.dylib', '/usr/local/lib/libMoltenVK.dylib', "${buildDir}/libs/main/shared/libvulkanjava.dylib"
+        }
+        println "Library paths fixed."
+    }
+}
+
+build.finalizedBy(fixDylibPaths)
