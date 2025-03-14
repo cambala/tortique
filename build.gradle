@@ -36,14 +36,17 @@ model {
                 if (os.isMacOsX()) {
                     cppCompiler.args "-I${System.getProperty('java.home')}/include/darwin"
                     cppCompiler.args '-I', '/usr/local/include'
-                    linker.args '-L', '/usr/local/lib', '-lvulkan', '-lMoltenVK', '-lglfw'
+                    cppCompiler.args '-std=c++20'
+                    linker.args '-L', '/usr/local/lib', '-lvulkan', '-lMoltenVK', '/usr/local/lib/libglfw.dylib'
                 } else if (os.isLinux()) {
                     cppCompiler.args "-I${System.getProperty('java.home')}/include/linux"
                     cppCompiler.args '-I', '/usr/include/vulkan'
+                    cppCompiler.args '-std=c++20'
                     linker.args '-lvulkan', '-lglfw'
                 } else if (os.isWindows()) {
                     cppCompiler.args "-I${System.getProperty('java.home')}/include/win32"
                     cppCompiler.args '-I', 'C:/VulkanSDK/x.x.x.x/Include'
+                    cppCompiler.args '-std=c++20'
                     linker.args '-L', 'C:/VulkanSDK/x.x.x.x/Lib', '-lvulkan-1', '-lglfw3'
                 }
                 println "cppCompiler.args: ${cppCompiler.args}"

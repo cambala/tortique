@@ -12,7 +12,7 @@ extern "C" JNIEXPORT jlong JNICALL Java_org_cambala_graphics_VulkanPipeline_crea
     pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
     // Укажите шейдеры, входные данные, растеризацию и т.д.
 
-    if (vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &pipeline) != VK_SUCCESS) {
+    if (vkCreateGraphicsPipelines(device, nullptr, 1, &pipelineInfo, nullptr, &pipeline) != VK_SUCCESS) {
         std::cerr << "Failed to create graphics pipeline!" << std::endl;
         return 0;
     }

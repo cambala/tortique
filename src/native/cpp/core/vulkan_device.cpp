@@ -5,7 +5,7 @@
 
 extern "C" JNIEXPORT jlong JNICALL Java_org_cambala_core_VulkanPhysicalDevice_findPhysicalDevice(JNIEnv* env, jobject obj, jlong instanceHandle) {
     VkInstance instance = reinterpret_cast<VkInstance>(instanceHandle);
-    VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
+    VkPhysicalDevice physicalDevice = nullptr;
 
     uint32_t deviceCount = 0;
     vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
@@ -26,7 +26,7 @@ extern "C" JNIEXPORT jlong JNICALL Java_org_cambala_core_VulkanPhysicalDevice_fi
         }
     }
 
-    if (physicalDevice == VK_NULL_HANDLE) {
+    if (physicalDevice == nullptr) {
         std::cerr << "No suitable GPU found!" << std::endl;
         return 0;
     }

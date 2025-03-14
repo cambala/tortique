@@ -53,8 +53,8 @@ extern "C" JNIEXPORT void JNICALL Java_org_cambala_graphics_VulkanRenderer_rende
     // Начало рендеринга
     VkRenderPassBeginInfo renderPassInfo = {};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-    renderPassInfo.renderArea.offset = {0, 0};
-    renderPassInfo.renderArea.extent = {800, 600}; // Размер окна
+    renderPassInfo.renderArea.offset = VkOffset2D{0, 0};
+    renderPassInfo.renderArea.extent = VkExtent2D{800, 600}; // Размер окна
     VkClearValue clearColor = {0.0f, 0.0f, 0.0f, 1.0f};
     renderPassInfo.clearValueCount = 1;
     renderPassInfo.pClearValues = &clearColor;
@@ -85,7 +85,7 @@ extern "C" JNIEXPORT void JNICALL Java_org_cambala_graphics_VulkanRenderer_rende
     VkQueue graphicsQueue;
     vkGetDeviceQueue(reinterpret_cast<VkDevice>(env->GetLongField(obj, env->GetFieldID(env->GetObjectClass(obj), "deviceHandle", "J"))), 0, 0, &graphicsQueue);
 
-    if (vkQueueSubmit(graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE) != VK_SUCCESS) {
+    if (vkQueueSubmit(graphicsQueue, 1, &submitInfo, nullptr) != VK_SUCCESS) {
         std::cerr << "Failed to submit draw command buffer!" << std::endl;
         return;
     }
