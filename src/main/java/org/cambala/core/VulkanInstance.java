@@ -1,4 +1,4 @@
-package org.cambala.vulkan;
+package org.cambala.core;
 
 public class VulkanInstance {
 

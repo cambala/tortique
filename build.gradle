@@ -18,7 +18,10 @@ model {
             sources {
                 cpp {
                     source {
-                        srcDir 'src/native/cpp'
+                        srcDir 'src/native/cpp/core'
+                        srcDir 'src/native/cpp/graphics'
+                        srcDir 'src/native/cpp/window'
+                        srcDir 'src/native/cpp/utils'
                         include '**/*.cpp'
                     }
                 }
@@ -33,15 +36,15 @@ model {
                 if (os.isMacOsX()) {
                     cppCompiler.args "-I${System.getProperty('java.home')}/include/darwin"
                     cppCompiler.args '-I', '/usr/local/include'
-                    linker.args '-L', '/usr/local/lib', '-lvulkan', '-lMoltenVK'
+                    linker.args '-L', '/usr/local/lib', '-lvulkan', '-lMoltenVK', '-lglfw'
                 } else if (os.isLinux()) {
                     cppCompiler.args "-I${System.getProperty('java.home')}/include/linux"
                     cppCompiler.args '-I', '/usr/include/vulkan'
-                    linker.args '-lvulkan'
+                    linker.args '-lvulkan', '-lglfw'
                 } else if (os.isWindows()) {
                     cppCompiler.args "-I${System.getProperty('java.home')}/include/win32"
                     cppCompiler.args '-I', 'C:/VulkanSDK/x.x.x.x/Include'
-                    linker.args '-L', 'C:/VulkanSDK/x.x.x.x/Lib', '-lvulkan-1'
+                    linker.args '-L', 'C:/VulkanSDK/x.x.x.x/Lib', '-lvulkan-1', '-lglfw3'
                 }
                 println "cppCompiler.args: ${cppCompiler.args}"
 

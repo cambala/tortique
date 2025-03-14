@@ -1,7 +1,8 @@
 #include <jni.h>
 #include <vulkan/vulkan.h>
+#include <iostream>
 
-extern "C" JNIEXPORT jlong JNICALL Java_org_cambala_vulkan_VulkanInstance_createInstance(JNIEnv* env, jobject obj) {
+extern "C" JNIEXPORT jlong JNICALL Java_org_cambala_core_VulkanInstance_createInstance(JNIEnv* env, jobject obj) {
     VkInstance instance;
     VkApplicationInfo appInfo = {};
     appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -16,7 +17,8 @@ extern "C" JNIEXPORT jlong JNICALL Java_org_cambala_vulkan_VulkanInstance_create
     createInfo.pApplicationInfo = &appInfo;
 
     if (vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS) {
-        return 0; // Ошибка
+        std::cerr << "Failed to create Vulkan instance!" << std::endl;
+        return 0;
     }
 
     return reinterpret_cast<jlong>(instance);
